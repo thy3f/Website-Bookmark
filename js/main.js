@@ -7,7 +7,9 @@ function saveBookmark(e){
   // Get form values
   var siteName =document.getElementById('siteName').value;
   var siteUrl =document.getElementById('siteUrl').value;
-  var folderName = document.getElementById('folderName').value;
+  var folderId = document.getElementById('foldersResults').value;
+
+  console.log(folderId);
 
   if(!validateForm(siteName, siteUrl)){
     return false;
@@ -16,7 +18,7 @@ function saveBookmark(e){
   var bookmark = {
     name: siteName,
     url: siteUrl,
-    folder: folderName
+    folder: folderId
   }
 
   /*
@@ -76,6 +78,8 @@ function deleteBookmark(url){
 function fetchBookmarks(){
   // Get bookmarks from localStorage
   var bookmarks = JSON.parse(localStorage.getItem('bookmarks'));
+  var folders = JSON.parse(localStorage.getItem('folders'));
+
   // Get output id
   var bookmarksResults = document.getElementById('bookmarksResults');
 
@@ -84,10 +88,10 @@ function fetchBookmarks(){
   for(var i = 0; i < bookmarks.length; i++){
     var name = bookmarks[i].name;
     var url = bookmarks[i].url;
-    var folder = bookmarks[i].folder;
+    var folder = folders[bookmarks[i].folder];
 
     if (!folder)
-      folderHolder = '- Home';
+      folderHolder = '';
     else
       folderHolder = '- ' +folder;
 
@@ -169,8 +173,7 @@ function fetchFolders(){
     else {
       folderHolder = folder;
     }
-    console.log(folderHolder);
-    foldersResults.innerHTML += '<option>'+folderHolder+'</option>';
+    foldersResults.innerHTML += '<option value="'+i+'">'+folderHolder+'</option>';
   }
 }
 
