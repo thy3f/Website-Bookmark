@@ -5,11 +5,13 @@ document.getElementById('myFolderForm').addEventListener('submit', saveFolder);
 // Save Bookmark
 function saveBookmark(e){
   // Get form values
-  var siteName =document.getElementById('siteName').value;
-  var siteUrl =document.getElementById('siteUrl').value;
+  var siteName = document.getElementById('siteName').value;
+  var siteUrl = document.getElementById('siteUrl').value;
   var folderId = document.getElementById('foldersResults').value;
 
-  console.log(folderId);
+  if(!siteName){
+    siteName = siteUrl;
+  }
 
   if(!validateForm(siteName, siteUrl)){
     return false;
@@ -115,7 +117,18 @@ function validateForm(siteName, siteUrl){
   var regex = new RegExp(expression);
 
   if(!siteUrl.match(regex)){
-    alert('Please use a valid URL');
+    alert('Please use a valid URL.');
+    return false;
+  }
+
+  var bookmarks = JSON.parse(localStorage.getItem('bookmarks'));
+  if (bookmarks.findIndex(i => i.name.toUpperCase() === siteName.toUpperCase()) !== -1){
+    alert('Duplicate Bookmark name. Please chose another name.');
+    return false;
+  }
+
+  if(bookmarks.findIndex(i => i.url.toUpperCase() === siteUrl.toUpperCase()) !== -1){
+    alert('Duplicate Bookmark URL.');
     return false;
   }
 
@@ -161,7 +174,6 @@ function fetchFolders(){
   // Get output id
   var foldersResults = document.getElementById('foldersResults');
 
-
   // Build output
   foldersResults.innerHTML = '';
   for (var i=0; i<folders.length; i++){
@@ -182,5 +194,44 @@ function validateNewFolderForm(folderName){
     alert('Please fill in the form');
     return false;
   }
+
+  var folders = JSON.parse(localStorage.getItem('folders'));
+  if (folders.findIndex(i => i.toUpperCase() === folderName.toUpperCase()) !== -1){
+    alert('Duplicate Folder name. Please chose another name.');
+    return false;
+  }
+
   return true;
+}
+
+function changeByClick(index){
+  var links = document.getElementsByClassName("nav navbar-nav")[0].children;
+  console.log(links);
+  for (var i=0; i<links.length; i++){
+    links[i].attributes.class.nodeValue = "inactive";
+  }
+  links[index].attributes.class.nodeValue = "active";
+
+  // Make element visible
+  switch(Number(index)){
+    case 0:
+      //make Login visible
+      document.getElementById("newBookmarkForm").style = "display: none;";
+      document.getElementById("bookmarksList").style = "display: none;";
+      document.getElementById("createFolderForm").style = "display: none;";
+      break;
+    case 1:
+      //make Bookmarks visible
+      document.getElementById("newBookmarkForm").style = "displayed";
+      document.getElementById("bookmarksList").style = "displayed";
+      document.getElementById("createFolderForm").style = "display: none;";
+      break;
+    case 2:
+      //make Folders visible
+      document.getElementById("newBookmarkForm").style = "display: none;";
+      document.getElementById("bookmarksList").style = "display: none;";
+      document.getElementById("createFolderForm").style = "display";
+      break;
+  }
+
 }
