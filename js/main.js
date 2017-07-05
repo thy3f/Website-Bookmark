@@ -78,6 +78,7 @@ function deleteBookmark(url){
 
 // Fetch bookmarks
 function fetchBookmarks(){
+
   // Get bookmarks from localStorage
   var bookmarks = JSON.parse(localStorage.getItem('bookmarks'));
   var folders = JSON.parse(localStorage.getItem('folders'));
@@ -169,6 +170,11 @@ function saveFolder(){
 }
 
 function fetchFolders(){
+  if(localStorage.getItem('folders') === 'null'){
+    folders.push("Home");
+    localStorage.setItem('folders', JSON.stringify(folders));
+  }
+
   // Get folders from localStorage
   var folders = JSON.parse(localStorage.getItem('folders'));
   // Get output id
@@ -206,13 +212,17 @@ function validateNewFolderForm(folderName){
 
 function changeByClick(index){
   var links = document.getElementsByClassName("nav navbar-nav")[0].children;
-  console.log(links);
   for (var i=0; i<links.length; i++){
-    links[i].attributes.class.nodeValue = "inactive";
+    links[i].attributes.class.value = "inactive";
   }
-  links[index].attributes.class.nodeValue = "active";
+  links[index].attributes.class.value = "active";
 
   // Make element visible
+  displayArea(index);
+
+}
+
+function displayArea(index){
   switch(Number(index)){
     case 0:
       //make Login visible
@@ -233,5 +243,38 @@ function changeByClick(index){
       document.getElementById("createFolderForm").style = "display";
       break;
   }
+}
 
+function initialize(){
+  console.log("In initialize");
+
+  if(localStorage.getItem('folders') === null){
+    console.log("In folders");
+    var folders = [];
+    var folder = "Home";
+    folders.push(folder);
+    localStorage.setItem('folders', JSON.stringify(folders));
+  }
+
+  if(localStorage.getItem('bookmarks') === null){
+    console.log("In bookmarks");
+    // Init array
+    var bookmarks = [];
+
+    var bookmark = {
+      name: "Example",
+      url: "http://example.com",
+      folder: 0
+    }
+
+    // Add to array
+    bookmarks.push(bookmark);
+    // Set to localStorage
+    localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
+  }
+
+  console.log(localStorage.getItem('bookmarks'));
+  console.log(localStorage.getItem('folders'));
+  fetchBookmarks();
+  fetchFolders();
 }
