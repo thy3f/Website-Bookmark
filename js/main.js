@@ -77,8 +77,37 @@ function deleteBookmark(url){
 }
 
 // Fetch bookmarks
-function fetchBookmarks(){
+// function fetchBookmarks(){
+//
+//   // Get bookmarks from localStorage
+//   var bookmarks = JSON.parse(localStorage.getItem('bookmarks'));
+//   var folders = JSON.parse(localStorage.getItem('folders'));
+//
+//   // Get output id
+//   var bookmarksResults = document.getElementById('bookmarksResults');
+//
+//   // Build output
+//   bookmarksResults.innerHTML = '';
+//   for(var i = 0; i < bookmarks.length; i++){
+//     var name = bookmarks[i].name;
+//     var url = bookmarks[i].url;
+//     var folder = folders[bookmarks[i].folder];
+//
+//     if (!folder)
+//       folderHolder = '';
+//     else
+//       folderHolder = '- ' +folder;
+//
+//     bookmarksResults.innerHTML += '<div class="well">'+
+//                                   '<h3>'+name+' ' +folderHolder+
+//                                   ' <a class="btn btn-default" target="_blank" href="'+url+'">Visit</a> ' +
+//                                   ' <a onclick="deleteBookmark(\''+url+'\')" class="btn btn-danger" href="#">Delete</a> ' +
+//                                   '</h3>'+
+//                                   '</div>';
+//   }
+// }
 
+function fetchBookmarks(){
   // Get bookmarks from localStorage
   var bookmarks = JSON.parse(localStorage.getItem('bookmarks'));
   var folders = JSON.parse(localStorage.getItem('folders'));
@@ -93,17 +122,16 @@ function fetchBookmarks(){
     var url = bookmarks[i].url;
     var folder = folders[bookmarks[i].folder];
 
-    if (!folder)
-      folderHolder = '';
-    else
-      folderHolder = '- ' +folder;
-
-    bookmarksResults.innerHTML += '<div class="well">'+
-                                  '<h3>'+name+' ' +folderHolder+
-                                  ' <a class="btn btn-default" target="_blank" href="'+url+'">Visit</a> ' +
-                                  ' <a onclick="deleteBookmark(\''+url+'\')" class="btn btn-danger" href="#">Delete</a> ' +
-                                  '</h3>'+
-                                  '</div>';
+    bookmarksResults.innerHTML += '<li class="list-group-item clearfix">'+
+                                  '<span class="glyphicon glyphicon-book"></span>'+
+                                  '   '+name+' - ' +folder+
+                                  '<span class="pull-right">'+
+                                  ' <a class="btn btn-info" target="_blank" href="'+url+'">Visit</a> ' +
+                                  ' <a onclick="deleteBookmark(\''+url+'\')" class="btn btn-warning" href="#">'+
+                                  '   <span class="glyphicon glyphicon-trash"></span>'+
+                                  '</a> ' +
+                                  '</span>'+
+                                  '</li>';
   }
 }
 
@@ -169,6 +197,7 @@ function saveFolder(){
   fetchFolders();
 }
 
+// Fetch Folders
 function fetchFolders(){
   if(localStorage.getItem('folders') === 'null'){
     folders.push("Home");
@@ -195,6 +224,7 @@ function fetchFolders(){
   }
 }
 
+// Validate new folder form
 function validateNewFolderForm(folderName){
   if(!folderName){
     alert('Please fill in the form');
@@ -210,6 +240,7 @@ function validateNewFolderForm(folderName){
   return true;
 }
 
+// Make menu element active/inactive
 function changeByClick(index){
   var links = document.getElementsByClassName("nav navbar-nav")[0].children;
   for (var i=0; i<links.length; i++){
@@ -222,6 +253,7 @@ function changeByClick(index){
 
 }
 
+// Make areas visible accordingly to selected menu item
 function displayArea(index){
   switch(Number(index)){
     case 0:
@@ -245,11 +277,9 @@ function displayArea(index){
   }
 }
 
+// Initialize function to populate website when accessed
 function initialize(){
-  console.log("In initialize");
-
   if(localStorage.getItem('folders') === null){
-    console.log("In folders");
     var folders = [];
     var folder = "Home";
     folders.push(folder);
@@ -257,7 +287,6 @@ function initialize(){
   }
 
   if(localStorage.getItem('bookmarks') === null){
-    console.log("In bookmarks");
     // Init array
     var bookmarks = [];
 
@@ -272,9 +301,32 @@ function initialize(){
     // Set to localStorage
     localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
   }
-
-  console.log(localStorage.getItem('bookmarks'));
-  console.log(localStorage.getItem('folders'));
   fetchBookmarks();
   fetchFolders();
+}
+
+// Get input element
+let filterInput = document.getElementById('filterInput');
+// Add event listener
+filterInput.addEventListener('keyup', filterBookmarks);
+
+function filterBookmarks(){
+  // Get value of input
+  let filterValue = document.getElementById('filterInput').value.toUpperCase();
+
+  // Get names ul
+  let ul = document.getElementById('bookmarksResults');
+  // Get lis from ul
+  let li = ul.querySelectorAll('li.list-group-item');
+
+  // Loop through collection-item lis
+  for(let i = 0;i < li.length;i++){
+    let text = li[i].childNodes[1].data;
+    // If matched
+    if(text.toUpperCase().indexOf(filterValue) > -1){
+      li[i].style.display = '';
+    } else {
+      li[i].style.display = 'none';
+    }
+  }
 }
